@@ -33,6 +33,37 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
         `).join("");
 
+        // เพิ่ม event listener ให้ปุ่มดูความคิดเห็น
+        document.querySelectorAll(".btn.btn-success").forEach(button => {
+            button.addEventListener("click", async (e) => {
+                const postId = e.target.dataset.postId;
+                const commentsDiv = document.getElementById(`comments-${postId}`);
+
+                if (commentsDiv.style.display === "none" || commentsDiv.innerHTML === "") {
+                    try {
+                        const commentsResponse = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`);
+                        if (!commentsResponse.ok) throw new Error("Failed to fetch comments");
+                        const comments = await commentsResponse.json();
+
+                        // ตรวจสอบว่ามีความคิดเห็นหรือไม่
+                        if (!Array.isArray(comments) || comments.length === 0) {
+                            commentsDiv.innerHTML = "<p>ไม่มีความคิดเห็น</p>";
+                        } else {
+                            commentsDiv.innerHTML = comments.map(comment => `
+                                <p><strong class="email-text">${comment.email}</strong>: ${comment.body}</p>
+                            `).join("");
+                        }
+                        commentsDiv.style.display = "block";
+                        e.target.textContent = "ซ่อนความคิดเห็น";
+                    } catch (error) {
+                        console.error("Error fetching comments:", error);
+                    }
+                } else {
+                    commentsDiv.style.display = "none";
+                    e.target.textContent = "ดูความคิดเห็น";
+                }
+            });
+        });
     } catch (error) {
         console.error("Error fetching data:", error);
         postsList.innerHTML = "<p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>";
