@@ -23,6 +23,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        // แสดงโพสต์
+        postsList.innerHTML = posts.map(post => `
+            <div class="post-item">
+                <h3>${post.title}</h3>
+                <p>${post.body}</p>
+                <button class="btn btn-success" data-post-id="${post.id}">ดูความคิดเห็น</button>
+                <div class="comments" id="comments-${post.id}" style="display: none;"></div>
+            </div>
+        `).join("");
+
     } catch (error) {
         console.error("Error fetching data:", error);
         postsList.innerHTML = "<p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>";
